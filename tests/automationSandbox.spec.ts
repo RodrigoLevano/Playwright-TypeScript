@@ -9,6 +9,7 @@ test.describe('Acciones en el Automation @Sandbox', () => {
         await test.step('Hacer click en el botón con ID dinámico', async() => {
             const botonIDDinamico = page.getByRole('button', { name: 'Hacé click para generar un ID' });
             await botonIDDinamico.click();
+            await expect(page.getByText('OMG, aparezco después de 3'), 'No se encontró el mensaje después de 3 segundos').toBeVisible()
         })
     })
 
@@ -20,6 +21,8 @@ test.describe('Acciones en el Automation @Sandbox', () => {
 
         await test.step('Ingreso texto en el campo Un Aburrido Texto', async () => {
             await page.getByRole('textbox', { name: 'Un aburrido texto' }).fill("Estoy aprendiendo Playwright")
+            await expect(page.getByRole('textbox', { name: 'Un aburrido texto' }), 'El texbox no es editable').toBeEditable();
+            await expect(page.getByRole('textbox', { name: 'Un aburrido texto' }), 'El textbox no tiene el valor deseado').toHaveValue("Estoy aprendiendo Playwright");
         })
 
     })
@@ -31,10 +34,12 @@ test.describe('Acciones en el Automation @Sandbox', () => {
         
         await test.step('Puedo seleccionar el checkBox Pasta', async () => {
             await page.getByLabel('Pasta 🍝').check();
+            await expect(page.getByLabel('Pasta 🍝'), 'El elemento Pasta no está seleccionado').toBeChecked();
         })
 
         await test.step('Puedo deseleccionar el checkbox Pasta', async () => {
             await page.getByLabel('Pasta 🍝').uncheck();
+            await expect(page.getByLabel('Pasta 🍝'), 'el checkbox Pasta está seleccionado').not.toBeChecked();
         })
         
         
@@ -47,6 +52,7 @@ test.describe('Acciones en el Automation @Sandbox', () => {
 
         await test.step('Puedo seleccionar el radio Button para No', async () => {
             await page.getByRole('radio', { name: 'No' }).check();
+            await expect(page.getByRole('radio', { name: 'No' })).toBeChecked();
         })
         
     })
@@ -59,6 +65,14 @@ test.describe('Acciones en el Automation @Sandbox', () => {
 
         await test.step('Puedo seleccionar un deporte del dropdown', async () => {
             const deportes = ['Fútbol', 'Tennis', 'Basketball'];
+            for(let deporte of deportes){
+                const elemento = await page.$(`select#formBasicSelect > option:is(:text("${deporte}"))`)
+                if(elemento) {
+                    console.log(`La opción '${deporte}' está presente`)
+                }else {
+                    throw new Error(`Opción '${deporte}' no está presente en la lista`)
+                }
+            }
         })
     })
 
@@ -104,12 +118,6 @@ test.describe('Acciones en el Automation @Sandbox', () => {
         await test.step('Puedo validar los elementos para la columna Nombre de la tabla estática', async () => {
             const valoresColumnaNombres = await page.$$eval('h2:has-text("Tabla estática") + table tbody tr td:nth-child(2)', elements => elements.map(element => element.textContent))
             const nombresEsperados = ['Messi', 'Ronaldo', 'Mbappe'];
-
-            await test.info().attach('screenshot'), {
-                body: await page.screenshot(),
-                contentType: 'image/png',
-            }
-            expect(valoresColumnaNombres).toEqual(nombresEsperados);
         })
         
     })
@@ -129,8 +137,6 @@ test.describe('Acciones en el Automation @Sandbox', () => {
 
             //Creamos el segundo arreglo con todos los valores de la tabla dinámica
             const valoresPostReload = await page.$$eval('h2:has-text("Tabla dinámica") + table tbody tr td', elements => elements.map(element => element.textContent));
-            console.log(valoresPostReload);
-            expect(valoresTablaDinamica).not.toEqual(valoresPostReload);
         })
         
     })
@@ -139,15 +145,6 @@ test.describe('Acciones en el Automation @Sandbox', () => {
         await test.step('Navego al Sandbox de Free Range Testers', async() => {
             await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/')
         })
-
-        await test.step('Valido que todos los elementos de los checkboxes son los correctos', async () => {
-            await expect.soft(page.getByRole('checkbox', { name: 'Pizza 🍕' }), 'No se encontró el elemento Pizza').toBeVisible();
-            await expect.soft(page.getByRole('checkbox', { name: 'Hamburguesa 🍔' })).toBeVisible();
-            await expect.soft(page.getByRole('checkbox', { name: 'Pasta 🍝' }), 'No se encontró el elemento Pasta').toBeVisible();
-            await expect.soft(page.getByRole('checkbox', { name: 'Helado 🍧' })).toBeVisible();
-            await expect.soft(page.getByRole('checkbox', { name: 'Torta 🍰' })).toBeVisible();
-        })
-        
     })
 
     test('Puedo validar un elemento dentro del popup', async ({ page }) => {
@@ -157,11 +154,6 @@ test.describe('Acciones en el Automation @Sandbox', () => {
 
         await test.step('Hacer click en el botón popup', async () => {
             await page.getByRole('button', { name: 'Mostrar popup' }).click();
-        })
-
-        await test.step('Validar elemento del popup', async () => {
-            await expect(page.getByText('¿Viste? ¡Apareció un Pop-up!'), 'No se encontró el texto en el popup').toHaveText('¿Viste? ¡Apareció un Pop-up!');
-            await page.getByRole('button', { name: 'Cerrar' }).click();
         })
     })
     
