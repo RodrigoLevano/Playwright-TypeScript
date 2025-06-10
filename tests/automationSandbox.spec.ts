@@ -118,6 +118,8 @@ test.describe('Acciones en el Automation @Sandbox', () => {
         await test.step('Puedo validar los elementos para la columna Nombre de la tabla estática', async () => {
             const valoresColumnaNombres = await page.$$eval('h2:has-text("Tabla estática") + table tbody tr td:nth-child(2)', elements => elements.map(element => element.textContent))
             const nombresEsperados = ['Messi', 'Ronaldo', 'Mbappe'];
+
+            expect(valoresColumnaNombres).toEqual(nombresEsperados);
         })
         
     })
@@ -137,6 +139,9 @@ test.describe('Acciones en el Automation @Sandbox', () => {
 
             //Creamos el segundo arreglo con todos los valores de la tabla dinámica
             const valoresPostReload = await page.$$eval('h2:has-text("Tabla dinámica") + table tbody tr td', elements => elements.map(element => element.textContent));
+            console.log(valoresPostReload);
+
+            expect(valoresTablaDinamica).not.toEqual(valoresPostReload);
         })
         
     })
@@ -145,6 +150,15 @@ test.describe('Acciones en el Automation @Sandbox', () => {
         await test.step('Navego al Sandbox de Free Range Testers', async() => {
             await page.goto('https://thefreerangetester.github.io/sandbox-automation-testing/')
         })
+
+        await test.step('Valido que todos los elementos del checkbox son correctos', async () => {
+            await expect.soft(page.getByText('Pizza 🍕')).toBeVisible()
+            await expect.soft(page.getByText('Hamburguesas 🍔'), 'No se encontró el elemento esperado').toBeVisible()
+            await expect.soft(page.getByText('Pasta 🍝')).toBeVisible()
+            await expect.soft(page.getByText('Helado 🍧')).toBeVisible()
+            await expect.soft(page.getByText('Torta 🍰')).toBeVisible()
+        })
+        
     })
 
     test('Puedo validar un elemento dentro del popup', async ({ page }) => {
