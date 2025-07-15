@@ -1,4 +1,5 @@
-import {test,expect} from 'playwright/test'
+import {test,expect} from 'playwright/test';
+import { SandboxPage } from './Pages/SandBoxPage'; 
 
 test.describe('Acciones en el Automation @Sandbox', () => {
     test('Click en el Botón ID Dinámico', async ({page}) => {
@@ -33,8 +34,16 @@ test.describe('Acciones en el Automation @Sandbox', () => {
         })
         
         await test.step('Puedo seleccionar el checkBox Pasta', async () => {
+<<<<<<< HEAD
             await page.getByLabel('Pasta 🍝').check();
             await expect(page.getByLabel('Pasta 🍝'), 'El elemento Pasta no está seleccionado').toBeChecked();
+=======
+            const sandbox = new SandboxPage(page)
+            //await page.getByLabel('Pasta 🍝').check();
+            await sandbox.checkPasta();
+            
+            await expect(sandbox.pastaCheckbox, 'El checkbox no estaba seleccionado').toBeChecked();
+>>>>>>> master
         })
 
         await test.step('Puedo deseleccionar el checkbox Pasta', async () => {
